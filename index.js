@@ -16,10 +16,14 @@ async function getUser(name) {
 
 document.querySelector('#search').addEventListener('submit', async (e) => {
   e.preventDefault();
+
   const username = document.querySelector('#findByUsername').value;
   const profile = await getUser(username);
+  const repos = await getRepos(profile)
 
   showProfile(profile)
+  showRepos(repos)
+
 })
 //..........................Get Information from API End Here..................................
 
@@ -59,3 +63,46 @@ function showProfile(profile) {
 }
 
 //..........................Search & Show End Here..................................
+
+
+
+
+
+
+//..........................Show Repositories Start Here..................................
+
+
+async function getRepos(profile) {
+  const res = await fetch(`${profile.repos_url}?client_id=${Client_ID}&client_secret=${Client_secrets}&per_page=10`)
+
+  const repo = await res.json();
+  return repo;
+}
+
+
+
+function showRepos(repos) {
+
+  let newHtml = '';
+
+  for (let repo of repos) {
+    newHtml += `
+    <div class="repo">
+          <div class="repo_name">
+            <a href="${repo.html_url}">${repo.name}</a>
+          </div>
+          <p>
+            <span class="circle"></span> ${repo.language}
+            <ion-icon name="star-outline"></ion-icon> ${repo.watchers}
+            <ion-icon name="git-branch-outline"></ion-icon> ${repo.forks_count}
+          </p>
+    </div>
+    
+  `
+  }
+
+  document.querySelector('.repos').innerHTML = newHtml;
+
+}
+
+//..........................Show Repositories End Here..................................
